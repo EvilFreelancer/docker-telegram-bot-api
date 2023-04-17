@@ -54,8 +54,7 @@ jobs:
         if: steps.check_tag.outputs.tag_exists != 'true'
         uses: docker/build-push-action@v2
         with:
-          context: ./telegram-bot-api
-          dockerfile: ./telegram-bot-api/Dockerfile
+          context: .
           push: ${{ github.event_name != 'pull_request' }}
           build-args: TELEGRAM_API_REF=${{ env.FULL_SHA }}
           tags: |
