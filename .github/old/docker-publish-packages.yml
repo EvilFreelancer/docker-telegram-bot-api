@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image to Docker Hub
+name: Build and Publish Docker Image to GitHub Packages
 
 on:
   repository_dispatch:
@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  REGISTRY: docker.io
+  REGISTRY: ghcr.io
   USERNAME: evilfreelancer
   REPOSITORY: docker-telegram-bot-api
 
@@ -25,29 +25,29 @@ jobs:
           repository: tdlib/telegram-bot-api
           path: telegram-bot-api
 
-      - name: Log in to the Docker Hub
+      - name: Log in to the Container registry
         uses: docker/login-action@v1
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ env.USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get short commit SHA and full commit SHA
         run: |
           echo "SHORT_SHA=$(git --git-dir ./telegram-bot-api/.git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "FULL_SHA=$(git --git-dir ./telegram-bot-api/.git rev-parse HEAD)" >> $GITHUB_ENV
 
-      - name: Check if tag already exists in Docker Hub
+      - name: Check if tag already exists in GitHub Packages
         id: check_tag
         env:
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          URL="https://hub.docker.com/v2/repositories/${{ env.USERNAME }}/${{ env.REPOSITORY }}/tags/${{ env.SHORT_SHA }}"
-          RESPONSE=$(curl -s -H "Authorization: JWT $DOCKERHUB_TOKEN" $URL)
-          if echo $RESPONSE | grep -q "\"detail\":\"Object not found\""; then
-            echo "::set-output name=tag_exists::false"
-          else
+          URL="https://api.github.com/repos/${{ env.USERNAME }}/${{ env.REPOSITORY }}/packages/container/${{ env.REPOSITORY }}/versions"
+          TAGS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $URL | jq '.[].metadata.container.tags[]')
+          if echo $TAGS | grep -q "\"${{ env.SHORT_SHA }}\""; then
             echo "::set-output name=tag_exists::true"
+          else
+            echo "::set-output name=tag_exists::false"
           fi
 
       - name: Build and push Docker image
