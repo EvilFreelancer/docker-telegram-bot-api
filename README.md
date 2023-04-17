@@ -45,6 +45,39 @@ Below is a table describing each available variable:
 | TELEGRAM_PROXY                   | Set a proxy server for the Telegram Bot API.             |         |
 | TELEGRAM_HTTP_IP_ADDRESS         | Set the IP address to bind the HTTP server to.           |         |
 
+## Using the Pre-built Docker Image
+
+If you prefer not to build the Docker image yourself, you can use
+the pre-built image available on Docker Hub. This image is
+automatically built and pushed to Docker Hub whenever a new
+commit is made to the [tdlib/telegram-bot-api](https://github.com/tdlib/telegram-bot-api) repository.
+
+To use the pre-built Docker image, update the `docker-compose.yml`
+file with the pre-built image details:
+
+```yaml
+version: "3.9"
+
+services:
+  telegram-bot-api:
+    restart: unless-stopped
+    image: evilfreelancer/docker-telegram-bot-api:latest # use image instead of build.context
+    environment:
+      TELEGRAM_STAT: "true"
+      TELEGRAM_LOCAL: "true"
+      TELEGRAM_API_ID: "123"
+      TELEGRAM_API_HASH: "hash"
+    volumes:
+      - ./telegram-bot-api_data:/var/lib/telegram-bot-api
+    ports:
+      - "127.0.0.1:8081:8081"
+      - "127.0.0.1:8082:8082"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50k"
+```
+
 ## Customizing Telegram Bot API Version
 
 Additionally, you can specify a specific branch, tag, or commit of

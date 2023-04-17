@@ -4,6 +4,7 @@ services:
 
   telegram-bot-api:
     restart: unless-stopped
+    # image: evilfreelancer/docker-telegram-bot-api:latest
     build:
       context: .
     environment:
