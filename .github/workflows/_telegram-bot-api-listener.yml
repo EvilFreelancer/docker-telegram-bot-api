@@ -1,0 +1,35 @@
+name: Telegram Bot API Listener
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day
+
+env:
+  UPSTREAM_REPOSITORY: https://github.com/tdlib/telegram-bot-api.git
+  TARGET_REPOSITORY: EvilFreelancer/docker-telegram-bot-api
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Telegram Bot API repository
+        uses: actions/checkout@v2
+        with:
+          repository: tdlib/telegram-bot-api
+          fetch-depth: 1
+
+      - name: Trigger Build and Publish on Update
+        if: ${{ github.event_name == 'schedule' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LAST_COMMIT=$(git rev-parse HEAD)
+          REPOSITORY_NAME=$(basename $GITHUB_REPOSITORY)
+          URL="https://api.github.com/repos/${{ env.TARGET_REPOSITORY }}/dispatches"
+
+          curl -XPOST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Content-Type: application/json" \
+            --data "{\"event_type\": \"telegram-bot-api-update\", \"client_payload\": {\"commit\": \"$LAST_COMMIT\"}}" \
+            $URL

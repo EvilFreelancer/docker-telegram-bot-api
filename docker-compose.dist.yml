@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+
+  telegram-bot-api:
+    restart: unless-stopped
+    build:
+      context: ./telegram-bot-api
+    environment:
+      TELEGRAM_STAT: "true"
+      TELEGRAM_LOCAL: "true"
+      TELEGRAM_API_ID: "123"
+      TELEGRAM_API_HASH: "hash"
+    volumes:
+      - ./telegram-bot-api_data:/var/lib/telegram-bot-api
+    ports:
+      - "127.0.0.1:8081:8081"
+      - "127.0.0.1:8082:8082"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50k"

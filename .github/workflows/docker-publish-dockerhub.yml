@@ -1,0 +1,42 @@
+name: Build and Publish Docker Image to Docker Hub
+
+on:
+  repository_dispatch:
+    types: [ telegram-bot-api-update ]
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: docker.io
+  USERNAME: EvilFreelancer
+  REPOSITORY: docker-telegram-bot-api
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out your repository
+        uses: actions/checkout@v2
+
+      - name: Check out Telegram Bot API repository
+        uses: actions/checkout@v2
+        with:
+          repository: tdlib/telegram-bot-api
+          path: telegram-bot-api
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.USERNAME }}/${{ env.REPOSITORY }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.USERNAME }}/${{ env.REPOSITORY }}:latest
