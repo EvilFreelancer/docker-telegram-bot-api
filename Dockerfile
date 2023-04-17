@@ -5,8 +5,11 @@ WORKDIR /usr/src
 
 ARG TELEGRAM_API_REF=master
 
-RUN apk add --no-cache --update alpine-sdk linux-headers git zlib-dev openssl-dev gperf cmake git \
- && git clone --branch ${TELEGRAM_API_REF} --recursive https://github.com/tdlib/telegram-bot-api.git
+RUN set -xe \
+ && apk add --no-cache --update alpine-sdk linux-headers git zlib-dev openssl-dev gperf cmake git \
+ && git clone --recursive https://github.com/tdlib/telegram-bot-api.git \
+ && cd telegram-bot-api \
+ && git checkout ${TELEGRAM_API_REF}
 
 WORKDIR /usr/src/telegram-bot-api/build
 RUN set -xe \

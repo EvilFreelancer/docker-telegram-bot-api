@@ -1,0 +1,5 @@
+/.git/
+/.github/
+/.idea/
+/telegram-bot-api_data/
+/docker-compose.yml

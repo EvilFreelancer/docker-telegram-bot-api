@@ -5,7 +5,7 @@ services:
   telegram-bot-api:
     restart: unless-stopped
     build:
-      context: ./telegram-bot-api
+      context: .
     environment:
       TELEGRAM_STAT: "true"
       TELEGRAM_LOCAL: "true"
