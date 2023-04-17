@@ -45,9 +45,9 @@ jobs:
           URL="https://api.github.com/repos/${{ env.USERNAME }}/${{ env.REPOSITORY }}/packages/container/${{ env.REPOSITORY }}/versions"
           TAGS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $URL | jq '.[].metadata.container.tags[]')
           if echo $TAGS | grep -q "\"${{ env.SHORT_SHA }}\""; then
-            echo "::set-output name=tag_exists::true"
+            echo "tag_exists=true" >> $GITHUB_STATE
           else
-            echo "::set-output name=tag_exists::false"
+            echo "tag_exists=false" >> $GITHUB_STATE
           fi
 
       - name: Build and push Docker image
