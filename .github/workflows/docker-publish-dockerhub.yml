@@ -45,9 +45,9 @@ jobs:
           URL="https://hub.docker.com/v2/repositories/${{ env.USERNAME }}/${{ env.REPOSITORY }}/tags/${{ env.SHORT_SHA }}"
           RESPONSE=$(curl -s -H "Authorization: JWT $DOCKERHUB_TOKEN" $URL)
           if echo $RESPONSE | grep -q "\"detail\":\"Object not found\""; then
-            echo "::set-output name=tag_exists::false"
+            echo "tag_exists=true" >> $GITHUB_STATE
           else
-            echo "::set-output name=tag_exists::true"
+            echo "tag_exists=false" >> $GITHUB_STATE
           fi
 
       - name: Build and push Docker image
