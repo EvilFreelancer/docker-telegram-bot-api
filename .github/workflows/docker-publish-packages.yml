@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  USERNAME: EvilFreelancer
+  USERNAME: evilfreelancer
   REPOSITORY: docker-telegram-bot-api
 
 jobs:
@@ -18,6 +18,12 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+
+      - name: Check out Telegram Bot API repository
+        uses: actions/checkout@v2
+        with:
+          repository: tdlib/telegram-bot-api
+          path: telegram-bot-api
 
       - name: Log in to the Container registry
         uses: docker/login-action@v1
